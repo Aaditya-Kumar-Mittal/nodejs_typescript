@@ -3,3 +3,7 @@ npx tsc --init
 configure tsconfig.json for lib outdir rootdir
 
 npm i typescript @types/node ts-node --save-dev
+
+"dev": "ts-node src/app.ts"
+
+npm i nodemon @types/express
