@@ -1,41 +1,51 @@
-// Basic Types
+import express, { Express, Request, Response } from "express";
 
-let isDone : Boolean = false
-let num: Number = 1000
-let str: String = "Hello World"
+const app: Express = express();
+const port = 3000;
 
-let list : any[] = [1, 2, 3, "Apple","Grapes"]
+// Parsing json
+app.use(express.json());
 
-console.log(isDone)
-console.log(num)
-console.log(str)
-console.log(list)
+// Middleware -> Add Start Time Property To Request
 
-let randomVal : any = 4
+// For adding custom properties need to add interface
+interface CustomRequest extends Request {
+  startTime?: number
+}
 
-console.log(randomVal)
+app.use((req: CustomRequest, res: Response, next) => {
+  req.startTime = Date.now();
+  next();
+});
 
-randomVal ="Aaditya"
+// req -> Request<p, ResBody, ReqBody, ReqQuery, Locals>
+// Route is /user/:id, then this route is p(type for route parameters) here
+// ResBody = res.json / res.send
+// res -> Response<ResBody, Locals>
 
-console.log(randomVal)
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello, I'm learning Express with TypeScript!");
+});
 
-randomVal = true
+// Post Roue -> new user -> name and email
+// -> /user/:id -> Request<ParamsTypes {}, ResBody, ReqBody, ReqQuery (for searching and querying information), Locals>
 
-console.log(randomVal)
+interface User {
+  name: string,
+  email: string
+}
 
-let xyz :undefined = undefined
-let abc :null = null
+app.post("/user", (req: Request<{}, {}, User>, res: Response) => {
+  const { name, email } = req.body;
+  res.json({ name, email, message: "User created successfully" });
+});
 
-console.log(xyz)
-console.log(abc)
+// User based on Id
+app.get("/user/:id", (req: Request<{ id: String }>, res: Response) => {
+  const { id } = req.params;
+  res.json({ id, message: "User found successfully" });
+});
 
-enum Color {Red, Green, Blue}
-let c : Color = Color.Green
-
-console.log(c)
-
-// Tuple
-
-let tuple1: [string , number] = ["Aaditya", 1];
-
-console.log(tuple1);
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
